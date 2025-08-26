@@ -1,0 +1,12 @@
+basePath: /api/v1
+consumes:
+- application/json
+info:
+  contact: {}
+  description: no description
+  title: Dapso API Documentation
+  version: "1.0"
+paths: {}
+produces:
+- application/json
+swagger: "2.0"
