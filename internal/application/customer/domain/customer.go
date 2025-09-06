@@ -10,11 +10,11 @@ import (
 )
 
 type Customer struct {
-	ID        uuid.UUID
-	Email     string
-	Password  string
-	Name      string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"-"`
 }
 
 func New(email, password, name string) (*Customer, error) {

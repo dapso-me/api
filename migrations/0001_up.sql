@@ -9,9 +9,21 @@ CREATE TABLE customers.customers (
 );
 
 CREATE TABLE customers.sessions (
-  access_token TEXT(512) PRIMARY KEY,
+  access_token VARCHAR(512) PRIMARY KEY,
   customer_id  UUID NOT NULL,
-  ip           TEXT(64) NOT NULL,
-  user_agent   TEXT(4096) NOT NULL,
-  created_at   TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP()
+  ip           VARCHAR(64) NOT NULL,
+  user_agent   VARCHAR(4096) NOT NULL,
+  created_at   TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP(),
+
+  FOREIGN KEY (customer_id) REFERENCES customers.customers (id) ON DELETE CASCADE
+);
+
+CREATE TABLE customers.otp (
+  id         UUID PRIMARY KEY,
+  email      TEXT(254) NOT NULL,
+  code       VARCHAR(6) NOT NULL,
+  purpose    VARCHAR(255) NOT NULL,
+  ip         VARCHAR(64) NOT NULL,
+  expires_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP() NOT NULL
 );
