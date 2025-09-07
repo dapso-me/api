@@ -12,7 +12,7 @@ import (
 type Customer struct {
 	ID        uuid.UUID `json:"id"`
 	Email     string    `json:"email"`
-	Password  string    `json:"password"`
+	Password  string    `json:"-"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"-"`
 }
@@ -50,6 +50,20 @@ func (c *Customer) ComparePassword(password string) error {
 	if err != nil {
 		return ErrIncorrectPassword
 	}
+
+	return nil
+}
+
+func (c *Customer) SetName(name string) {
+	c.Name = name
+}
+
+func (c *Customer) SetPassword(currentPassword, newPassword string) error {
+	if err := c.ComparePassword(currentPassword); err != nil {
+		return err
+	}
+
+	c.Password = newPassword
 
 	return nil
 }
