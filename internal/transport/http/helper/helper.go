@@ -34,15 +34,17 @@ type ResponseError struct {
 
 func HandleError(c echo.Context, err error) error {
 	if errors.Is(err, common.ErrUnauthorized) {
-		return c.JSON(401, ResponseError{Code: "UNAUTHORIZED", Message: "Unauthorized"})
+		return c.JSON(401, ResponseError{Code: "UNAUTHORIZED", Message: "unauthorized"})
 	} else if errors.Is(err, common.ErrForbidden) {
-		return c.JSON(403, ResponseError{Code: "FORBIDDEN", Message: "Forbidden"})
+		return c.JSON(403, ResponseError{Code: "FORBIDDEN", Message: "forbidden"})
+	} else if errors.Is(err, common.ErrTooManyRequests) {
+		return c.JSON(429, ResponseError{Code: "TOO_MANY_REQUESTS", Message: "too many requests"})
 	} else {
 		var appErr *common.AppError
 		if errors.As(err, &appErr) {
 			return c.JSON(400, ResponseError{Code: appErr.Code(), Message: appErr.Message()})
 		} else {
-			return c.JSON(500, ResponseError{Code: "INTERNAL_SERVER_ERROR", Message: "Internal Server Error"})
+			return c.JSON(500, ResponseError{Code: "INTERNAL_SERVER_ERROR", Message: "internal server error"})
 		}
 	}
 }
