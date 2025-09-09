@@ -1,6 +1,7 @@
 package postgresql
 
 import (
+	"api/internal/configuration"
 	"fmt"
 	"time"
 
@@ -28,10 +29,10 @@ func NewConfig(host, port, user, password, name, sslMode string) *Config {
 	}
 }
 
-func New(cfg *Config) (*sqlx.DB, error) {
+func New(cfg *configuration.PostgreSQL) (*sqlx.DB, error) {
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name, cfg.SSLMode,
+		cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.Name, cfg.SSLMode,
 	)
 
 	db, err := sqlx.Connect("pgx", connStr)

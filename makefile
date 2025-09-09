@@ -1,8 +1,13 @@
 include .env
 export
 
-run:
-	go run ./cmd/api/main.go
+dev up:
+	docker compose -f ./deployment/docker-compose-dev.yml build
+	docker compose -f ./deployment/docker-compose-dev.yml up -d
+
+dev down:
+	docker compose -f ./deployment/docker-compose-dev.yml down
+	
 
 test:
 	go clean -testcache

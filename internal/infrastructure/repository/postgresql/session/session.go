@@ -16,6 +16,10 @@ type repo struct {
 	db *sqlx.DB
 }
 
+func New(db *sqlx.DB) *repo {
+	return &repo{db: db}
+}
+
 func (r *repo) FindOneByAccessToken(c context.Context, accessToken string) (*session.Session, error) {
 	query := "SELECT * FROM customers.sessions WHERE access_token = $1;"
 

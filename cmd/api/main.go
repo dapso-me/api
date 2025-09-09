@@ -1,9 +1,17 @@
 package main
 
 import (
+	customer_usecase "api/internal/application/customer"
+	otp_usecase "api/internal/application/otp"
+	session_usecase "api/internal/application/session"
 	"api/internal/configuration"
+	customer_repository "api/internal/infrastructure/repository/postgresql/customer"
+	otp_postgresql_repository "api/internal/infrastructure/repository/postgresql/otp"
+	session_postgresql_repository "api/internal/infrastructure/repository/postgresql/session"
 	"api/internal/transport/http"
+	account_handler "api/internal/transport/http/handlers/account"
 	"api/pkg/logger"
+	"api/pkg/postgresql"
 	"context"
 	"log"
 	"os"
@@ -29,23 +37,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// dbConfig := postgresql.Config{
-	// 	Host:     cfg.PostgreSQL.Host,
-	// 	Port:     cfg.PostgreSQL.Port,
-	// 	User:     cfg.PostgreSQL.User,
-	// 	Password: cfg.PostgreSQL.Pass,
-	// 	Name:     cfg.PostgreSQL.Name,
-	// 	SSLMode:  cfg.PostgreSQL.SSLMode,
-	// }
-	// db, err := postgresql.New(&dbConfig)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	db, err := postgresql.New(&cfg.PostgreSQL)
+	if err != nil {
+		logger.Fatal("failed to connect db", zap.Error(err))
+	}
 
-	// db.Ping()
+	customerRepo := customer_repository.New(db)
+	sessionRepo := session_postgresql_repository.New(db)
+	otpRepo := otp_postgresql_repository.New(db)
+
+	otpUseCase := otp_usecase.New(otpRepo, nil)
+	sessionUseCase := session_usecase.New(sessionRepo)
+	customerUseCase := customer_usecase.New(customerRepo, otpUseCase, sessionUseCase)
+
+	accountHandler := account_handler.New(customerUseCase)
 
 	httpServer := http.New()
-	httpServer.SetupRouter()
+	httpServer.SetupRouter(
+		accountHandler,
+	)
 
 	go func() {
 		if err := httpServer.Run("0.0.0.0:4000"); err != nil {

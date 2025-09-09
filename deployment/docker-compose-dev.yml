@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: ./deployment/Dockerfile
+
+    container_name: api
+
+    env_file:
+      - ../.env
+
+    ports:
+      - "4000:4000"
+
+    restart: always
+    
+    volumes:
+      - ../logs/:/app/logs
+
+  db:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - ../migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
