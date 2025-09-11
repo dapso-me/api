@@ -2,12 +2,10 @@ package customer
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type UseCase interface {
-	Authenticate(c context.Context, customerID uuid.UUID) (*AuthOutput, error)
+	Authenticate(c context.Context) (*AuthOutput, error)
 	Register(c context.Context, dto *RegisterInput) error
 	ConfirmRegister(c context.Context, dto *ConfirmRegisterInput) (*AuthOutput, error)
 	Login(c context.Context, dto *LoginInput) (*AuthOutput, error)

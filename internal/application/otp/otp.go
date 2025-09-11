@@ -4,6 +4,7 @@ import (
 	"api/internal/common"
 	"api/internal/domain/otp"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -33,7 +34,7 @@ func (uc *useCase) CheckRateLimit(c context.Context, email, ip string) error {
 		return fmt.Errorf("check rate limit: %w", err)
 	}
 
-	if len(otps) > 2 {
+	if len(otps) >= 1 {
 		return fmt.Errorf("check rate limit: %w", otp.ErrEmailRegistrationRateLimit)
 	}
 
@@ -43,7 +44,7 @@ func (uc *useCase) CheckRateLimit(c context.Context, email, ip string) error {
 		return fmt.Errorf("check rate limit: %w", err)
 	}
 
-	if len(otps) > 4 {
+	if len(otps) >= 5 {
 		return fmt.Errorf("check rate limit: %w", common.ErrTooManyRequests)
 	}
 
@@ -60,6 +61,10 @@ func (uc *useCase) Send(c context.Context, dto *otp.SendInput) error {
 		return fmt.Errorf("send: %w", err)
 	}
 
+	if err := uc.otpRepo.Save(c, otpEntity); err != nil {
+		return fmt.Errorf("send: %w", err)
+	}
+
 	if err := uc.mailService.SendCode(dto.Email, string(dto.Purpose), otpEntity.Code); err != nil {
 		return fmt.Errorf("send: %w", err)
 	}
@@ -70,6 +75,9 @@ func (uc *useCase) Send(c context.Context, dto *otp.SendInput) error {
 func (uc *useCase) VerifyAndRevoke(c context.Context, dto *otp.VerifyInput) error {
 	otpEntity, err := uc.otpRepo.FindOneByCredentials(c, dto.Email, dto.Code)
 	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return fmt.Errorf("verify and revoke: %w", otp.ErrIncorrectOTP)
+		}
 		return fmt.Errorf("verify and revoke: %w", err)
 	}
 

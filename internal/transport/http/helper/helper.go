@@ -8,7 +8,7 @@ import (
 )
 
 type Middleware interface {
-	// Authenticate(next echo.HandlerFunc) echo.HandlerFunc
+	Authenticate(next echo.HandlerFunc) echo.HandlerFunc
 }
 
 type Handler interface {

@@ -16,6 +16,7 @@ services:
     
     volumes:
       - ../logs/:/app/logs
+      - ../templates/:/app/templates
 
   db:
     image: postgres:16

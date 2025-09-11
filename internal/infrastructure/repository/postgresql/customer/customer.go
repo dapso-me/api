@@ -59,8 +59,7 @@ func (r *repo) FindOneByEmail(c context.Context, email string) (*customer.Custom
 func (r *repo) Save(c context.Context, customer *customer.Customer) error {
 	query := `INSERT INTO customers.customers (id, email, password, name, created_at)
 						VALUES ($1, $2, $3, $4, $5)
-						ON CONFLICT (id) DO
-						UPDATE password = $3, name = $4;`
+						ON CONFLICT (id) DO UPDATE SET password = $3, name = $4;`
 	_, err := r.db.ExecContext(c, query, customer.ID, customer.Email, customer.Password, customer.Name, customer.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("%w: save: %w", common.ErrInfrastructure, err)

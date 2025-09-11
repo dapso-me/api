@@ -10,11 +10,11 @@ import (
 )
 
 type Customer struct {
-	ID        uuid.UUID `json:"id"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"-"`
+	ID        uuid.UUID `db:"id" json:"id"`
+	Email     string    `db:"email" json:"email"`
+	Password  string    `db:"password" json:"-"`
+	Name      string    `db:"name" json:"name"`
+	CreatedAt time.Time `db:"created_at" json:"-"`
 }
 
 func New(email, password, name string) (*Customer, error) {
@@ -63,7 +63,12 @@ func (c *Customer) SetPassword(currentPassword, newPassword string) error {
 		return err
 	}
 
-	c.Password = newPassword
+	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 10)
+	if err != nil {
+		return fmt.Errorf("customer: failed to hash password: %w", err)
+	}
+
+	c.Password = string(hashedNewPassword)
 
 	return nil
 }

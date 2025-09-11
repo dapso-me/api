@@ -8,8 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"github.com/google/uuid"
 )
 
 type useCase struct {
@@ -95,6 +93,10 @@ func (uc *useCase) ConfirmRegister(c context.Context, dto *customer.ConfirmRegis
 func (uc *useCase) Login(c context.Context, dto *customer.LoginInput) (*customer.AuthOutput, error) {
 	customerEntity, err := uc.customerRepo.FindOneByEmail(c, dto.Email)
 	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return nil, fmt.Errorf("login: %w", customer.ErrIncorrectPassword)
+		}
+
 		return nil, fmt.Errorf("login: %w", err)
 	}
 
@@ -118,7 +120,7 @@ func (uc *useCase) Login(c context.Context, dto *customer.LoginInput) (*customer
 	}, nil
 }
 
-func (uc *useCase) Authenticate(c context.Context, customerID uuid.UUID) (*customer.AuthOutput, error) {
+func (uc *useCase) Authenticate(c context.Context) (*customer.AuthOutput, error) {
 	session, err := session.GetFromContext(c)
 	if err != nil {
 		return nil, fmt.Errorf("authenticate: %w", err)

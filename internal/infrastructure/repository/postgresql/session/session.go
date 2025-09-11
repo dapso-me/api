@@ -55,7 +55,7 @@ func (r *repo) FindByCustomerID(c context.Context, customerID uuid.UUID) ([]*ses
 func (r *repo) Save(c context.Context, session *session.Session) error {
 	query := `INSERT INTO customers.sessions (access_token, customer_id, ip, user_agent, created_at)
 						VALUES ($1, $2, $3, $4, $5) ON CONFLICT (access_token)
-						DO UPDATE ip = $3, user_agent = $4;`
+						DO UPDATE SET ip = $3, user_agent = $4;`
 	_, err := r.db.ExecContext(c, query, session.AccessToken, session.CustomerID, session.IP, session.UserAgent, session.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("%w: save: %w", common.ErrInfrastructure, err)

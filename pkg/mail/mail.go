@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"api/internal/configuration"
 	"bytes"
 	"crypto/tls"
 	"fmt"
@@ -10,26 +11,34 @@ import (
 )
 
 type MailService struct {
-	host     string
-	port     int
-	fromName string
-	username string
-	password string
+	host          string
+	port          int
+	fromName      string
+	username      string
+	password      string
+	templatesPath string
 }
 
-func New(host, fromName, username, password string, port int) *MailService {
+func New(cfg *configuration.Mail) *MailService {
 	return &MailService{
-		host:     host,
-		port:     port,
-		fromName: fromName,
-		username: username,
-		password: password,
+		host:          cfg.Host,
+		port:          cfg.Port,
+		fromName:      cfg.FromName,
+		username:      cfg.Username,
+		password:      cfg.Password,
+		templatesPath: cfg.TemplatesPath,
 	}
 }
 
-func (m *MailService) Send(to, subject, templatePath string, data map[string]any) error {
+func (m *MailService) SendCode(to, purpose, code string) error {
 	from := fmt.Sprintf("%s <%s>", m.fromName, m.username)
-	return m.sendWithTemplate(from, to, subject, templatePath, data)
+	data := map[string]any{
+		"code": code,
+	}
+
+	templatePath := m.templatesPath + "/" + purpose + ".html"
+
+	return m.sendWithTemplate(from, to, "This is Subjet", templatePath, data)
 }
 
 func (m *MailService) sendWithTemplate(from, to, subject, templatePath string, data interface{}) error {
@@ -56,7 +65,7 @@ func (m *MailService) sendWithTemplate(from, to, subject, templatePath string, d
 
 	// send the message
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: false,
+		InsecureSkipVerify: true,
 		ServerName:         m.host,
 	}
 	err = e.SendWithTLS(addr, LoginAuth(m.username, m.password), tlsConfig)

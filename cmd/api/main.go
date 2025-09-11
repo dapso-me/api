@@ -11,6 +11,7 @@ import (
 	"api/internal/transport/http"
 	account_handler "api/internal/transport/http/handlers/account"
 	"api/pkg/logger"
+	"api/pkg/mail"
 	"api/pkg/postgresql"
 	"context"
 	"log"
@@ -42,17 +43,19 @@ func main() {
 		logger.Fatal("failed to connect db", zap.Error(err))
 	}
 
+	mailService := mail.New(&cfg.Mail)
+
 	customerRepo := customer_repository.New(db)
 	sessionRepo := session_postgresql_repository.New(db)
 	otpRepo := otp_postgresql_repository.New(db)
 
-	otpUseCase := otp_usecase.New(otpRepo, nil)
+	otpUseCase := otp_usecase.New(otpRepo, mailService)
 	sessionUseCase := session_usecase.New(sessionRepo)
 	customerUseCase := customer_usecase.New(customerRepo, otpUseCase, sessionUseCase)
 
-	accountHandler := account_handler.New(customerUseCase)
+	accountHandler := account_handler.New(customerUseCase, logger)
 
-	httpServer := http.New()
+	httpServer := http.New(sessionRepo)
 	httpServer.SetupRouter(
 		accountHandler,
 	)

@@ -9,11 +9,11 @@ import (
 )
 
 type Session struct {
-	AccessToken string    `json:"access_token"`
-	CustomerID  uuid.UUID `json:"customer_id"`
-	IP          string    `json:"-"`
-	UserAgent   string    `json:"-"`
-	CreatedAt   time.Time `json:"-"`
+	AccessToken string    `db:"access_token" json:"access_token"`
+	CustomerID  uuid.UUID `db:"customer_id" json:"customer_id"`
+	IP          string    `db:"ip" json:"-"`
+	UserAgent   string    `db:"user_agent" json:"-"`
+	CreatedAt   time.Time `db:"created_at" json:"-"`
 }
 
 func New(customerID uuid.UUID, ip, userAgent string) (*Session, error) {

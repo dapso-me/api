@@ -18,13 +18,13 @@ const (
 const TTL = time.Second * 60 * 10
 
 type OTP struct {
-	ID        uuid.UUID
-	Email     string
-	Code      string
-	Purpose   Purpose
-	IP        string
-	ExpiresAt time.Time
-	CreatedAt time.Time
+	ID        uuid.UUID `db:"id"`
+	Email     string    `db:"email"`
+	Code      string    `db:"code"`
+	Purpose   Purpose   `db:"purpose"`
+	IP        string    `db:"ip"`
+	ExpiresAt time.Time `db:"expires_at"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 func New(email string, purpose Purpose, IP string) (*OTP, error) {

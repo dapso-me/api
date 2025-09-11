@@ -1,11 +1,11 @@
 include .env
 export
 
-dev up:
+up:
 	docker compose -f ./deployment/docker-compose-dev.yml build
 	docker compose -f ./deployment/docker-compose-dev.yml up -d
 
-dev down:
+down:
 	docker compose -f ./deployment/docker-compose-dev.yml down
 	
 

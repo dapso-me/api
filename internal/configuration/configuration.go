@@ -25,11 +25,12 @@ type S3 struct {
 }
 
 type Mail struct {
-	Host     string `env:"MAIL_SMTP_HOST"`
-	Port     int    `env:"MAIL_SMTP_PORT"`
-	Username string `env:"MAIL_SMTP_USERNAME"`
-	Password string `env:"MAIL_SMTP_PASSWORD"`
-	FromName string `env:"MAIL_FROM_NAME"`
+	Host          string `env:"MAIL_SMTP_HOST"`
+	Port          int    `env:"MAIL_SMTP_PORT"`
+	Username      string `env:"MAIL_SMTP_USERNAME"`
+	Password      string `env:"MAIL_SMTP_PASSWORD"`
+	FromName      string `env:"MAIL_FROM_NAME"`
+	TemplatesPath string `env:"MAIL_TEMPLATES_PATH"`
 }
 
 type Logger struct {
