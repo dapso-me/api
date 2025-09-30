@@ -9,17 +9,17 @@ import (
 )
 
 type Session struct {
-	AccessToken string    `db:"access_token" json:"access_token"`
-	CustomerID  uuid.UUID `db:"customer_id" json:"customer_id"`
-	IP          string    `db:"ip" json:"-"`
-	UserAgent   string    `db:"user_agent" json:"-"`
-	CreatedAt   time.Time `db:"created_at" json:"-"`
+	AccessToken string    `json:"access_token"`
+	CustomerID  uuid.UUID `json:"customer_id"`
+	IP          string    `json:"ip"`
+	UserAgent   string    `json:"user_agent"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func New(customerID uuid.UUID, ip, userAgent string) (*Session, error) {
 	accessToken, err := helpers.GenerateRandomString(128)
 	if err != nil {
-		return nil, fmt.Errorf("session: failed to generate access token: %w", err)
+		return nil, fmt.Errorf("new session: failed to generate random string: %w", err)
 	}
 
 	return &Session{

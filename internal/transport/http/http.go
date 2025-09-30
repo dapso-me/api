@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	_ "api/docs"
-	"api/internal/domain/session"
 	"api/internal/transport/http/helper"
 
 	"github.com/go-playground/validator/v10"
@@ -22,14 +21,12 @@ import (
 // @Produce      json
 
 type httpServer struct {
-	e           *echo.Echo
-	sessionRepo session.Repository
+	e *echo.Echo
 }
 
-func New(sessionRepo session.Repository) *httpServer {
+func New() *httpServer {
 	return &httpServer{
-		e:           echo.New(),
-		sessionRepo: sessionRepo,
+		e: echo.New(),
 	}
 }
 
