@@ -2,6 +2,24 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  account_handler.changePasswordReq:
+    properties:
+      current_password:
+        example: qwerty123
+        type: string
+      new_password:
+        example: 321ytrewq
+        type: string
+    type: object
+  account_handler.signInReq:
+    properties:
+      password:
+        example: qwerty123
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
   application.AuthOutput:
     properties:
       access_token:
@@ -22,29 +40,40 @@ definitions:
       username:
         type: string
     type: object
-  customer_handler.changePasswordReq:
-    properties:
-      current_password:
-        example: qwerty123
-        type: string
-      new_password:
-        example: 321ytrewq
-        type: string
-    type: object
-  customer_handler.signInReq:
-    properties:
-      password:
-        example: qwerty123
-        type: string
-      username:
-        example: john_doe
-        type: string
-    type: object
   helper.ResponseError:
     properties:
       code:
         type: string
       message:
+        type: string
+    type: object
+  helper.StatusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  project.Project:
+    properties:
+      ID:
+        type: string
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      name:
+        type: string
+      removed_at:
+        type: string
+      slug:
+        type: string
+    type: object
+  project_handler.addProjectReq:
+    properties:
+      customer_id:
+        type: string
+      name:
+        type: string
+      slug:
         type: string
     type: object
 info:
@@ -87,7 +116,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/customer_handler.signInReq'
+          $ref: '#/definitions/account_handler.signInReq'
       produces:
       - application/json
       responses:
@@ -121,7 +150,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/customer_handler.changePasswordReq'
+          $ref: '#/definitions/account_handler.changePasswordReq'
       produces:
       - application/json
       responses:
@@ -144,6 +173,111 @@ paths:
       summary: Change customer password
       tags:
       - Account
+  /project:
+    post:
+      consumes:
+      - application/json
+      description: Add a new project for a customer
+      parameters:
+      - description: Project data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/project_handler.addProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Add new project
+      tags:
+      - projects
+  /project/{ID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete project by ID
+      parameters:
+      - description: Project ID
+        format: uuid
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Delete project
+      tags:
+      - projects
+  /project/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: Get project information by slug
+      parameters:
+      - description: Project slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Get project by slug
+      tags:
+      - projects
 produces:
 - application/json
 swagger: "2.0"

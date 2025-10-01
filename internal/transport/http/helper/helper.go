@@ -27,6 +27,14 @@ func BindAndValidate(c echo.Context, dto any) error {
 	return nil
 }
 
+type StatusResponse struct {
+	Status string `json:"status"`
+}
+
+func StatusOk(c echo.Context) error {
+	return c.JSON(200, StatusResponse{Status: "OK"})
+}
+
 type ResponseError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
@@ -37,6 +45,8 @@ func HandleError(c echo.Context, err error) error {
 		return c.JSON(401, ResponseError{Code: "UNAUTHORIZED", Message: "unauthorized"})
 	} else if errors.Is(err, common.ErrForbidden) {
 		return c.JSON(403, ResponseError{Code: "FORBIDDEN", Message: "forbidden"})
+	} else if errors.Is(err, common.ErrNotFound) {
+		return c.JSON(403, ResponseError{Code: "NOT_FOUND", Message: "not found"})
 	} else if errors.Is(err, common.ErrTooManyRequests) {
 		return c.JSON(429, ResponseError{Code: "TOO_MANY_REQUESTS", Message: "too many requests"})
 	} else {

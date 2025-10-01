@@ -2,11 +2,14 @@ package main
 
 import (
 	customer_usecase "api/internal/application/customer"
+	project_usecase "api/internal/application/project"
 	"api/internal/configuration"
 	customer_postgresql_repository "api/internal/infrastructure/repository/customer/postgresql"
+	project_postgresql_repository "api/internal/infrastructure/repository/project/postgresql"
 	session_postgresql_repository "api/internal/infrastructure/repository/session/postgresql"
 	"api/internal/transport/http"
 	account_handler "api/internal/transport/http/handlers/account"
+	project_handler "api/internal/transport/http/handlers/project"
 	"api/pkg/logger"
 	"api/pkg/postgresql"
 	"context"
@@ -42,16 +45,20 @@ func main() {
 	// repositories
 	customerRepoPG := customer_postgresql_repository.New(db)
 	sessionRepoPG := session_postgresql_repository.New(db)
+	projectRepoPG := project_postgresql_repository.New(db)
 
 	// usecases
 	customerUC := customer_usecase.New(customerRepoPG, sessionRepoPG)
+	projectUC := project_usecase.New(customerUC, projectRepoPG)
 
 	// handlers
 	accountHandler := account_handler.New(logger, customerUC)
+	projectHandler := project_handler.New(logger, projectUC)
 
 	httpServer := http.New(sessionRepoPG)
 	httpServer.SetupRouter(
 		accountHandler,
+		projectHandler,
 	)
 
 	go func() {

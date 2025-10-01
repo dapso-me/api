@@ -6,6 +6,7 @@ import (
 )
 
 type Customer interface {
+	AdminGuard(c context.Context) error
 	SignIn(c context.Context, input *SignInInput) (*AuthOutput, error)
 	Authenticate(c context.Context) (*AuthOutput, error)
 	ChangePassword(c context.Context, input *ChangePasswordInput) error

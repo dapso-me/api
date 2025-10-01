@@ -22,6 +22,24 @@ func New(customerRepo customer.Repository, sessionRepo session.Repository) appli
 	}
 }
 
+func (uc *uc) AdminGuard(c context.Context) error {
+	session, err := session.GetFromContext(c)
+	if err != nil {
+		return fmt.Errorf("admin guard: %w", err)
+	}
+
+	customerEntity, err := uc.customerRepo.FindOneByID(c, session.CustomerID)
+	if err != nil {
+		return fmt.Errorf("admin guard: %w", err)
+	}
+
+	if err := customerEntity.HasRole(customer.OwnerRole); err != nil {
+		return fmt.Errorf("admin guard: %w", err)
+	}
+
+	return nil
+}
+
 func (uc *uc) SignIn(c context.Context, input *application.SignInInput) (*application.AuthOutput, error) {
 	customerEntity, err := uc.customerRepo.FindOneByUsername(c, input.Username)
 	if err != nil {
