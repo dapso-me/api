@@ -1,12 +1,149 @@
 basePath: /api/v1
 consumes:
 - application/json
+definitions:
+  application.AuthOutput:
+    properties:
+      access_token:
+        type: string
+      customer:
+        $ref: '#/definitions/customer.Customer'
+    type: object
+  customer.Customer:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  customer_handler.changePasswordReq:
+    properties:
+      current_password:
+        example: qwerty123
+        type: string
+      new_password:
+        example: 321ytrewq
+        type: string
+    type: object
+  customer_handler.signInReq:
+    properties:
+      password:
+        example: qwerty123
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
+  helper.ResponseError:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
 info:
   contact: {}
   description: no description
   title: Dapso API Documentation
   version: "1.0"
-paths: {}
+paths:
+  /account:
+    get:
+      consumes:
+      - application/json
+      description: Get authenticated customer information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.AuthOutput'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Get current account
+      tags:
+      - Account
+  /account/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate customer with username and password
+      parameters:
+      - description: Sign in credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/customer_handler.signInReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.AuthOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Sign in to Account
+      tags:
+      - Account
+  /account/password:
+    patch:
+      consumes:
+      - application/json
+      description: Change password for authenticated customer
+      parameters:
+      - description: Password change data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/customer_handler.changePasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Change customer password
+      tags:
+      - Account
 produces:
 - application/json
 swagger: "2.0"

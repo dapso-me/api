@@ -8,7 +8,7 @@ import (
 
 type Repository interface {
 	FindOneByID(c context.Context, customerID uuid.UUID) (*Customer, error)
-	FindOneByLogin(c context.Context, login string) (*Customer, error)
+	FindOneByUsername(c context.Context, username string) (*Customer, error)
 
 	Save(c context.Context, customer *Customer) error
 }

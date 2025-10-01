@@ -77,5 +77,5 @@ CREATE TABLE module_menu.option_item_translations (
   lang_code VARCHAR(5) NOT NULL,
   name      VARCHAR(255) NOT NULL,
 
-  FOREIGN KEY (item_id) REFERENCES module_menu.option_items (id) ON DELETE CASCADE,
+  FOREIGN KEY (item_id) REFERENCES module_menu.option_items (id) ON DELETE CASCADE
 );

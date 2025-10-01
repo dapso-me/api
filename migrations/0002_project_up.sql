@@ -33,7 +33,7 @@ CREATE TABLE project.subscriptions (
   id                      UUID PRIMARY KEY,
   project_id              UUID NOT NULL,
   billing_period_id       UUID NOT NULL,
-  billing_period_days     NOT NULL,
+  billing_period_days     INTEGER NOT NULL,
   billing_period_discount UUID NOT NULL,
   total_amount            INTEGER NOT NULL,
   is_active               BOOLEAN NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE project.subscriptions (
   created_at              TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 
   FOREIGN KEY (project_id) REFERENCES project.projects (id),
-  FOREIGN KEY (billing_period) REFERENCES project.billing_periods (id)
+  FOREIGN KEY (billing_period_id) REFERENCES project.billing_periods (id)
 );
 
 CREATE TABLE project.subscription_modules (
