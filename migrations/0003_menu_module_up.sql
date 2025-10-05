@@ -21,7 +21,6 @@ CREATE TABLE module_menu.dishes (
   category_id    UUID NOT NULL,
   position       INTEGER  NOT NULL,
   photo_url      VARCHAR(512) NOT NULL,
-  photo_mini_url VARCHAR(512) NOT NULL,
   price          INTEGER NOT NULL,
   is_available   BOOLEAN NOT NULL,
 
@@ -74,6 +73,8 @@ CREATE TABLE module_menu.option_item_translations (
   item_id   UUID NOT NULL,
   lang_code VARCHAR(5) NOT NULL,
   name      VARCHAR(255) NOT NULL,
+
+  UNIQUE (item_id, lang_code),
 
   FOREIGN KEY (item_id) REFERENCES module_menu.option_items (id) ON DELETE CASCADE
 );

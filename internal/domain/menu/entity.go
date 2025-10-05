@@ -31,14 +31,13 @@ func NewCategory(projectID uuid.UUID, position int, translations map[string]stri
 }
 
 type Dish struct {
-	ID           uuid.UUID     `json:"ID"`
-	CategoryID   uuid.UUID     `json:"category_id"`
-	Position     int           `json:"position"`
-	PhotoURL     string        `json:"photo_url"`
-	PhotoMiniURL string        `json:"photo_mini_url"`
-	Price        int           `json:"price"`
-	IsAvailable  bool          `json:"is_available"`
-	Options      []OptionGroup `json:"options"`
+	ID          uuid.UUID     `json:"ID"`
+	CategoryID  uuid.UUID     `json:"category_id"`
+	Position    int           `json:"position"`
+	PhotoURL    string        `json:"photo_url"`
+	Price       int           `json:"price"`
+	IsAvailable bool          `json:"is_available"`
+	Options     []OptionGroup `json:"options"`
 
 	// key is lang_code
 	Translations map[string]DishTranslation `json:"translations"`
@@ -50,8 +49,8 @@ type DishTranslation struct {
 }
 
 func NewDish(
-	categoryID uuid.UUID, position int, photoURL,
-	photoMiniURL string, price int, translations map[string]DishTranslation) (*Dish, error) {
+	categoryID uuid.UUID, position int, photoURL string,
+	price int, translations map[string]DishTranslation) (*Dish, error) {
 
 	ID, err := uuid.NewRandom()
 	if err != nil {
@@ -63,7 +62,6 @@ func NewDish(
 		CategoryID:   categoryID,
 		Position:     position,
 		PhotoURL:     photoURL,
-		PhotoMiniURL: photoMiniURL,
 		Price:        price,
 		IsAvailable:  true,
 		Translations: translations,
