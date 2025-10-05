@@ -46,7 +46,7 @@ func HandleError(c echo.Context, err error) error {
 	} else if errors.Is(err, common.ErrForbidden) {
 		return c.JSON(403, ResponseError{Code: "FORBIDDEN", Message: "forbidden"})
 	} else if errors.Is(err, common.ErrNotFound) {
-		return c.JSON(403, ResponseError{Code: "NOT_FOUND", Message: "not found"})
+		return c.JSON(404, ResponseError{Code: "NOT_FOUND", Message: "not found"})
 	} else if errors.Is(err, common.ErrTooManyRequests) {
 		return c.JSON(429, ResponseError{Code: "TOO_MANY_REQUESTS", Message: "too many requests"})
 	} else {

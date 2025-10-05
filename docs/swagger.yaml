@@ -52,6 +52,109 @@ definitions:
       status:
         type: string
     type: object
+  menu.Category:
+    properties:
+      ID:
+        type: string
+      dishes:
+        items:
+          $ref: '#/definitions/menu.Dish'
+        type: array
+      position:
+        type: integer
+      project_id:
+        type: string
+      translations:
+        additionalProperties:
+          type: string
+        description: key is lang_code
+        type: object
+    type: object
+  menu.Dish:
+    properties:
+      ID:
+        type: string
+      category_id:
+        type: string
+      is_available:
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/menu.OptionGroup'
+        type: array
+      photo_mini_url:
+        type: string
+      photo_url:
+        type: string
+      position:
+        type: integer
+      price:
+        type: integer
+      translations:
+        additionalProperties:
+          $ref: '#/definitions/menu.DishTranslation'
+        description: key is lang_code
+        type: object
+    type: object
+  menu.DishTranslation:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  menu.OptionGroup:
+    properties:
+      ID:
+        type: string
+      dish_id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/menu.OptionItem'
+        type: array
+      max_quantity:
+        type: integer
+      min_quantity:
+        type: integer
+      position:
+        type: integer
+      translations:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  menu.OptionItem:
+    properties:
+      ID:
+        type: string
+      max_quantity:
+        type: integer
+      min_quantity:
+        type: integer
+      option_group_id:
+        type: string
+      position:
+        type: integer
+      price_modifier:
+        type: integer
+      translations:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  menu.addCategoryReq:
+    properties:
+      position:
+        example: 1
+        type: integer
+      translations:
+        additionalProperties:
+          type: string
+        example:
+          '{en': Category Name}
+        type: object
+    type: object
   project.Project:
     properties:
       ID:
@@ -249,6 +352,74 @@ paths:
       summary: Delete project
       tags:
       - projects
+  /project/{projectID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu categories for a specific project
+      parameters:
+      - description: Project ID
+        format: uuid
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/menu.Category'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Get Menu Categories
+      tags:
+      - Menu
+  /project/{projectID}/category:
+    post:
+      consumes:
+      - application/json
+      description: Add a new category to project menu
+      parameters:
+      - description: Project ID
+        format: uuid
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/menu.addCategoryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Add Menu Category
+      tags:
+      - Menu
   /project/{slug}:
     get:
       consumes:

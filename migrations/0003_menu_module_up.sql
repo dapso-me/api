@@ -3,9 +3,7 @@ CREATE SCHEMA module_menu;
 CREATE TABLE module_menu.categories (
   id         UUID PRIMARY KEY,
   project_id UUID NOT NULL,
-  position   INTEGER NOT NULL,
-
-  UNIQUE (project_id, position)
+  position   INTEGER NOT NULL
 );
 
 CREATE TABLE module_menu.category_translations (

@@ -1,6 +1,7 @@
 package project
 
 import (
+	"api/internal/common"
 	"fmt"
 	"time"
 
@@ -32,8 +33,12 @@ func New(customerID uuid.UUID, slug, name string) (*Project, error) {
 	}, nil
 }
 
-func (p *Project) IsOwner(customerID uuid.UUID) bool {
-	return p.CustomerID == customerID
+func (p *Project) IsOwner(customerID uuid.UUID) error {
+	if p.CustomerID == customerID {
+		return nil
+	}
+
+	return common.ErrForbidden
 }
 
 func (p *Project) Remove() {

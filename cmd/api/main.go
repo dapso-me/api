@@ -1,14 +1,17 @@
 package main
 
 import (
+	category_usecase "api/internal/application/category"
 	customer_usecase "api/internal/application/customer"
 	project_usecase "api/internal/application/project"
 	"api/internal/configuration"
+	category_postgresql_repository "api/internal/infrastructure/repository/category/postgresql"
 	customer_postgresql_repository "api/internal/infrastructure/repository/customer/postgresql"
 	project_postgresql_repository "api/internal/infrastructure/repository/project/postgresql"
 	session_postgresql_repository "api/internal/infrastructure/repository/session/postgresql"
 	"api/internal/transport/http"
 	account_handler "api/internal/transport/http/handlers/account"
+	menu_handler "api/internal/transport/http/handlers/menu"
 	project_handler "api/internal/transport/http/handlers/project"
 	"api/pkg/logger"
 	"api/pkg/postgresql"
@@ -46,19 +49,23 @@ func main() {
 	customerRepoPG := customer_postgresql_repository.New(db)
 	sessionRepoPG := session_postgresql_repository.New(db)
 	projectRepoPG := project_postgresql_repository.New(db)
+	categoryRepoPG := category_postgresql_repository.New(db)
 
 	// usecases
 	customerUC := customer_usecase.New(customerRepoPG, sessionRepoPG)
 	projectUC := project_usecase.New(customerUC, projectRepoPG)
+	categoryUC := category_usecase.New(categoryRepoPG, projectRepoPG)
 
 	// handlers
 	accountHandler := account_handler.New(logger, customerUC)
 	projectHandler := project_handler.New(logger, projectUC)
+	menuHandler := menu_handler.New(logger, categoryUC)
 
 	httpServer := http.New(sessionRepoPG)
 	httpServer.SetupRouter(
 		accountHandler,
 		projectHandler,
+		menuHandler,
 	)
 
 	go func() {

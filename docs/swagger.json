@@ -274,6 +274,108 @@
                 }
             }
         },
+        "/project/{projectID}": {
+            "get": {
+                "description": "Get all menu categories for a specific project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Get Menu Categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Project ID",
+                        "name": "projectID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/menu.Category"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/{projectID}/category": {
+            "post": {
+                "description": "Add a new category to project menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Add Menu Category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Project ID",
+                        "name": "projectID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/menu.addCategoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/project/{slug}": {
             "get": {
                 "description": "Get project information by slug",
@@ -393,6 +495,162 @@
             "properties": {
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "menu.Category": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "dishes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/menu.Dish"
+                    }
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string"
+                },
+                "translations": {
+                    "description": "key is lang_code",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "menu.Dish": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "is_available": {
+                    "type": "boolean"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/menu.OptionGroup"
+                    }
+                },
+                "photo_mini_url": {
+                    "type": "string"
+                },
+                "photo_url": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "translations": {
+                    "description": "key is lang_code",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/menu.DishTranslation"
+                    }
+                }
+            }
+        },
+        "menu.DishTranslation": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "menu.OptionGroup": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "dish_id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/menu.OptionItem"
+                    }
+                },
+                "max_quantity": {
+                    "type": "integer"
+                },
+                "min_quantity": {
+                    "type": "integer"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "translations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "menu.OptionItem": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "max_quantity": {
+                    "type": "integer"
+                },
+                "min_quantity": {
+                    "type": "integer"
+                },
+                "option_group_id": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "price_modifier": {
+                    "type": "integer"
+                },
+                "translations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "menu.addCategoryReq": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "translations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "{en": "Category Name}"
+                    }
                 }
             }
         },
