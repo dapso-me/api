@@ -25,10 +25,10 @@ func New(db *pgxpool.Pool) menu.DishRepository {
 func (r *repo) FindOneByID(c context.Context, dishID uuid.UUID) (*menu.Dish, error) {
 	var dishEntity menu.Dish
 
-	sql := "SELECT id, category_id, position, photo_url, price, is_available FROM module_menu.dishes WHERE id = $1;"
+	sql := "SELECT id, project_id, category_id, position, photo_url, price, is_available FROM module_menu.dishes WHERE id = $1;"
 	row := r.db.QueryRow(c, sql, dishID)
 	err := row.Scan(
-		&dishEntity.ID, &dishEntity.CategoryID, &dishEntity.Position,
+		&dishEntity.ID, &dishEntity.ProjectID, &dishEntity.CategoryID, &dishEntity.Position,
 		&dishEntity.PhotoURL, &dishEntity.Price, &dishEntity.IsAvailable,
 	)
 	if err != nil {
@@ -70,7 +70,7 @@ func (r *repo) FindOneByID(c context.Context, dishID uuid.UUID) (*menu.Dish, err
 func (r *repo) FindByProjectID(c context.Context, projectID uuid.UUID) ([]*menu.Dish, error) {
 	var output []*menu.Dish
 
-	sql := "SELECT id, category_id, position, photo_url, price, is_available FROM module_menu.dishes WHERE project_id = $1;"
+	sql := "SELECT id, project_id, category_id, position, photo_url, price, is_available FROM module_menu.dishes WHERE project_id = $1;"
 	rows, err := r.db.Query(c, sql, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("find dishes by projectID %v: %w: %w", projectID, err, common.ErrInfrastructure)
@@ -79,7 +79,7 @@ func (r *repo) FindByProjectID(c context.Context, projectID uuid.UUID) ([]*menu.
 	for rows.Next() {
 		var dish menu.Dish
 		err := rows.Scan(
-			&dish.ID, &dish.CategoryID, &dish.Position,
+			&dish.ID, &dish.ProjectID, &dish.CategoryID, &dish.Position,
 			&dish.PhotoURL, &dish.Price, &dish.IsAvailable,
 		)
 		if err != nil {
@@ -128,8 +128,8 @@ func (r *repo) Save(c context.Context, d *menu.Dish) error {
 
 	// dish
 	sql := `INSERT INTO module_menu.dishes
-						(id, category_id, position, photo_url, price, is_available)
-						VALUES ($1, $2, $3, $4, $5, $6)
+						(id, project_id, category_id, position, photo_url, price, is_available)
+						VALUES ($1, $2, $3, $4, $5, $6, $7)
 					ON CONFLICT (id)
 					DO UPDATE SET
 						category_id = EXCLUDED.category_id,
@@ -137,7 +137,7 @@ func (r *repo) Save(c context.Context, d *menu.Dish) error {
 						photo_url = EXCLUDED.photo_url,
 						price = EXCLUDED.price,
 						is_available = EXCLUDED.is_available`
-	_, err = tx.Exec(c, sql, d.ID, d.CategoryID, d.Position, d.PhotoURL, d.Price, d.IsAvailable)
+	_, err = tx.Exec(c, sql, d.ID, d.ProjectID, d.CategoryID, d.Position, d.PhotoURL, d.Price, d.IsAvailable)
 	if err != nil {
 		return fmt.Errorf("save dish %v: %w: %w", d.ID, err, common.ErrInfrastructure)
 	}

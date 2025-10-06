@@ -18,13 +18,14 @@ CREATE TABLE module_menu.category_translations (
 
 CREATE TABLE module_menu.dishes (
   id             UUID PRIMARY KEY,
-  category_id    UUID NOT NULL,
+  project_id     UUID NOT NULL,
+  category_id    UUID,
   position       INTEGER  NOT NULL,
   photo_url      VARCHAR(512) NOT NULL,
   price          INTEGER NOT NULL,
   is_available   BOOLEAN NOT NULL,
 
-  FOREIGN KEY (category_id) REFERENCES module_menu.categories (id)
+  FOREIGN KEY (category_id) REFERENCES module_menu.categories (id) ON DELETE SET NULL
 );
 
 CREATE TABLE module_menu.dish_translations (
