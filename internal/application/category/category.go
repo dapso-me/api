@@ -13,13 +13,18 @@ import (
 
 type uc struct {
 	categoryRepo menu.CategoryRepository
+	dishRepo     menu.DishRepository
 	projectRepo  project.Repository
 }
 
-func New(categoryRepo menu.CategoryRepository, projectRepo project.Repository) application.Category {
+func New(
+	categoryRepo menu.CategoryRepository,
+	projectRepo project.Repository,
+	dishRepo menu.DishRepository) application.Category {
 	return &uc{
 		categoryRepo: categoryRepo,
 		projectRepo:  projectRepo,
+		dishRepo:     dishRepo,
 	}
 }
 
@@ -27,6 +32,26 @@ func (uc *uc) FindByProjectID(c context.Context, projectID uuid.UUID) ([]*menu.C
 	categories, err := uc.categoryRepo.FindByProjectID(c, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("find by project ID: %w", err)
+	}
+
+	output, err := uc.loadDishes(c, projectID, categories)
+	if err != nil {
+		return nil, fmt.Errorf("find by project ID: %w", err)
+	}
+
+	return output, nil
+}
+
+func (uc *uc) loadDishes(c context.Context, projectID uuid.UUID, categories []*menu.Category) ([]*menu.Category, error) {
+	dishes, err := uc.dishRepo.FindByProjectID(c, projectID)
+	if err != nil {
+		return nil, fmt.Errorf("loadDishes: %w", err)
+	}
+
+	for _, dish := range dishes {
+		for _, category := range categories {
+			category.Dishes = append(category.Dishes, *dish)
+		}
 	}
 
 	return categories, nil

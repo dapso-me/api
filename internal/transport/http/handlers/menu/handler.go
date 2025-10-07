@@ -3,6 +3,7 @@ package menu_handler
 import (
 	"api/internal/application"
 	"api/internal/transport/http/helper"
+	"encoding/base64"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -12,12 +13,14 @@ import (
 type handler struct {
 	logger   *zap.Logger
 	category application.Category
+	dish     application.Dish
 }
 
-func New(logger *zap.Logger, category application.Category) helper.Handler {
+func New(logger *zap.Logger, category application.Category, dish application.Dish) helper.Handler {
 	return &handler{
 		logger:   logger,
 		category: category,
+		dish:     dish,
 	}
 }
 
@@ -27,6 +30,7 @@ func (h *handler) Register(g *echo.Group, m helper.Middleware) {
 
 	private := project.Group("", m.Authenticate)
 	private.POST("/category", h.addCategory)
+	private.POST("/dish", h.addDish)
 }
 
 // getMenu godoc
@@ -86,6 +90,42 @@ func (h *handler) addCategory(c echo.Context) error {
 	output, err := h.category.Add(c.Request().Context(), input)
 	if err != nil {
 		h.logger.Error("failed to add category", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	return c.JSON(200, output)
+}
+
+func (h *handler) addDish(c echo.Context) error {
+	var dto addDishReq
+	if err := helper.BindAndValidate(c, &dto); err != nil {
+		h.logger.Error("failed to add dish", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	projectID, err := uuid.Parse(c.Param("projectID"))
+	if err != nil {
+		h.logger.Error("failed to add dish", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	imageBytes, err := base64.StdEncoding.DecodeString(dto.Photo)
+	if err != nil {
+		h.logger.Error("failed to add dish", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	input := &application.AddDishInput{
+		ProjectID:    projectID,
+		CategoryID:   dto.CategoryID,
+		Position:     dto.Position,
+		Photo:        imageBytes,
+		Price:        dto.Price,
+		Translations: dto.Translations,
+	}
+	output, err := h.dish.Add(c.Request().Context(), input)
+	if err != nil {
+		h.logger.Error("failed to add dish", zap.Error(err))
 		return helper.HandleError(c, err)
 	}
 

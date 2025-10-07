@@ -4,6 +4,7 @@ import (
 	"api/internal/application"
 	"api/internal/common"
 	"api/internal/domain/project"
+	"api/internal/domain/session"
 	"context"
 	"errors"
 	"fmt"
@@ -25,6 +26,27 @@ func New(auth Auth, projectRepo project.Repository) application.Project {
 		auth:        auth,
 		projectRepo: projectRepo,
 	}
+}
+
+func (uc *uc) ProjectGuard(c context.Context, projectID uuid.UUID) error {
+	sessionEntity, err := session.GetFromContext(c)
+	if err != nil {
+		return fmt.Errorf("project guard: %w", err)
+	}
+
+	projectEntity, err := uc.projectRepo.FindOneByID(c, projectID)
+	if err != nil {
+		return fmt.Errorf("project guard: %w", err)
+	}
+
+	if projectEntity.CustomerID != sessionEntity.CustomerID {
+		if err := uc.auth.AdminGuard(c); err != nil {
+			return fmt.Errorf("project guard: %w", common.ErrForbidden)
+		}
+		return fmt.Errorf("project guard: %w", common.ErrForbidden)
+	}
+
+	return nil
 }
 
 func (uc *uc) FindOneBySlug(c context.Context, slug string) (*project.Project, error) {

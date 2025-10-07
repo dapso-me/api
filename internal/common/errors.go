@@ -6,11 +6,12 @@ import (
 )
 
 var (
-	ErrNotFound        = errors.New("NOT_FOUND")
-	ErrUnauthorized    = errors.New("UNAUTHORIZED")
-	ErrForbidden       = errors.New("FORBIDDEN")
-	ErrTooManyRequests = errors.New("TOO_MANY_REQUESTS")
-	ErrInfrastructure  = errors.New("INFRASTRUCTURE_ERROR")
+	ErrNotFound          = errors.New("NOT_FOUND")
+	ErrUnauthorized      = errors.New("UNAUTHORIZED")
+	ErrForbidden         = errors.New("FORBIDDEN")
+	ErrTooManyRequests   = errors.New("TOO_MANY_REQUESTS")
+	ErrInfrastructure    = errors.New("INFRASTRUCTURE_ERROR")
+	ErrUnsupportedFormat = errors.New("UNSUPPORTED_MEDIA_FORMAT")
 )
 
 type BusinessError interface {

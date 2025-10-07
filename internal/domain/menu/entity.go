@@ -70,6 +70,17 @@ func NewDish(
 	}, nil
 }
 
+func (d *Dish) SetPhoto(photoURL string) {
+	d.PhotoURL = photoURL
+}
+
+func (d *Dish) Update(categoryID *uuid.UUID, position int, price int, translations map[string]DishTranslation) {
+	d.CategoryID = categoryID
+	d.Position = position
+	d.Price = price
+	d.Translations = translations
+}
+
 type OptionGroup struct {
 	ID           uuid.UUID         `json:"ID"`
 	DishID       uuid.UUID         `json:"dish_id"`

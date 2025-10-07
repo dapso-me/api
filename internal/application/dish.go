@@ -8,27 +8,38 @@ import (
 )
 
 type Dish interface {
-	Add(c context.Context, input *AddCategoryInput) (*menu.Dish, error)
+	Add(c context.Context, input *AddDishInput) (*menu.Dish, error)
+	PutImage(c context.Context, input *PutDishImageInput) (*menu.Dish, error)
 	Remove(c context.Context, dishID uuid.UUID) error
-	Update()
+	Update(c context.Context, input *UpdateDishInput) (*menu.Dish, error)
 
-	AddOption(c context.Context, input *AddOptionInput) error
-	RemoveOption(c context.Context)
-	UpdateOption()
+	// AddOption(c context.Context, input *AddOptionInput) error
+	// RemoveOption(c context.Context)
+	// UpdateOption()
 
-	AddItem()
-	RemoveItem()
-	UpdateItem()
+	// AddItem()
+	// RemoveItem()
+	// UpdateItem()
 }
 
 type AddDishInput struct {
-	CategoryID   uuid.UUID
+	ProjectID    uuid.UUID
+	CategoryID   *uuid.UUID
 	Position     int
-	PhotoURL     string
+	Photo        []byte
 	Price        int
 	Translations map[string]menu.DishTranslation
 }
 
-type AddOptionInput struct {
+type PutDishImageInput struct {
 	DishID uuid.UUID
+	Photo  []byte
+}
+
+type UpdateDishInput struct {
+	DishID       uuid.UUID
+	CategoryID   *uuid.UUID
+	Position     int
+	Price        int
+	Translations map[string]menu.DishTranslation
 }

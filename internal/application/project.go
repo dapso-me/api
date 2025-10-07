@@ -12,6 +12,8 @@ type Project interface {
 
 	Add(c context.Context, input *AddProjectInput) (*project.Project, error)
 	Remove(c context.Context, projectID uuid.UUID) error
+
+	ProjectGuard(c context.Context, projectID uuid.UUID) error
 }
 
 type AddProjectInput struct {
