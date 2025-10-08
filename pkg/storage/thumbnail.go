@@ -43,7 +43,7 @@ func thumbnail(file []byte, width int) ([]byte, error) {
 
 	dst := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
+	draw.CatmullRom.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 	switch mimetype {
 	case "image/jpeg":
