@@ -43,7 +43,7 @@ func (h *handler) Register(g *echo.Group, m helper.Middleware) {
 // @Success      200 {array} menu.Category
 // @Failure      400 {object} helper.ResponseError
 // @Failure      500 {object} helper.ResponseError
-// @Router       /project/{projectID} [get]
+// @Router       /project/{projectID}/menu [get]
 func (h *handler) getMenu(c echo.Context) error {
 	projectID, err := uuid.Parse(c.Param("projectID"))
 	if err != nil {
@@ -96,6 +96,18 @@ func (h *handler) addCategory(c echo.Context) error {
 	return c.JSON(200, output)
 }
 
+// addDish godoc
+// @Summary      Add Dish
+// @Description  Add a new dish to a category in project menu
+// @Tags         Menu
+// @Accept       json
+// @Produce      json
+// @Param        projectID path string true "Project ID" format(uuid)
+// @Param        request body addDishReq true "Dish data"
+// @Success      200 {object} menu.Dish
+// @Failure      400 {object} helper.ResponseError
+// @Failure      500 {object} helper.ResponseError
+// @Router       /project/{projectID}/dish [post]
 func (h *handler) addDish(c echo.Context) error {
 	var dto addDishReq
 	if err := helper.BindAndValidate(c, &dto); err != nil {

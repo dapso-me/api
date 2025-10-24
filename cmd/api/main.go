@@ -62,7 +62,7 @@ func main() {
 
 	// usecases
 	customerUC := customer_usecase.New(customerRepoPG, sessionRepoPG)
-	projectUC := project_usecase.New(customerUC, projectRepoPG)
+	projectUC := project_usecase.New(customerUC, projectRepoPG, categoryRepoPG)
 	categoryUC := category_usecase.New(categoryRepoPG, projectRepoPG, dishRepoPG)
 	dishUC := dish_usecase.New(dishRepoPG, projectUC, storage)
 

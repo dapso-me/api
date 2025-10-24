@@ -75,3 +75,23 @@ func (r *repo) Save(c context.Context, project *project.Project) error {
 
 	return nil
 }
+
+func (r *repo) FindByCustomerID(c context.Context, customerID uuid.UUID) ([]*project.Project, error) {
+	output := []*project.Project{}
+
+	sql := "SELECT id, customer_id, slug, name, removed_at, created_at FROM project.projects WHERE customer_id = $1"
+	rows, err := r.db.Query(c, sql, customerID)
+	if err != nil {
+		return nil, fmt.Errorf("find proejcts by customerID %v: %w: %w", customerID, err, common.ErrInfrastructure)
+	}
+
+	for rows.Next() {
+		var p project.Project
+		if err := rows.Scan(&p.ID, &p.CustomerID, &p.Slug, &p.Name, &p.RemovedAt, &p.CreatedAt); err != nil {
+			return nil, fmt.Errorf("find proejcts by customerID %v: %w: %w", customerID, err, common.ErrInfrastructure)
+		}
+		output = append(output, &p)
+	}
+
+	return output, nil
+}

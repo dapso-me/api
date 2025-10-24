@@ -82,14 +82,14 @@ definitions:
         items:
           $ref: '#/definitions/menu.OptionGroup'
         type: array
-      photo_mini_url:
-        type: string
       photo_url:
         type: string
       position:
         type: integer
       price:
         type: integer
+      project_id:
+        type: string
       translations:
         additionalProperties:
           $ref: '#/definitions/menu.DishTranslation'
@@ -143,7 +143,7 @@ definitions:
           type: string
         type: object
     type: object
-  menu.addCategoryReq:
+  menu_handler.addCategoryReq:
     properties:
       position:
         example: 1
@@ -153,6 +153,21 @@ definitions:
           type: string
         example:
           '{en': Category Name}
+        type: object
+    type: object
+  menu_handler.addDishReq:
+    properties:
+      category_id:
+        type: string
+      photo:
+        type: string
+      position:
+        type: integer
+      price:
+        type: integer
+      translations:
+        additionalProperties:
+          $ref: '#/definitions/menu.DishTranslation'
         type: object
     type: object
   project.Project:
@@ -352,7 +367,79 @@ paths:
       summary: Delete project
       tags:
       - projects
-  /project/{projectID}:
+  /project/{projectID}/category:
+    post:
+      consumes:
+      - application/json
+      description: Add a new category to project menu
+      parameters:
+      - description: Project ID
+        format: uuid
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: Category data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/menu_handler.addCategoryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Add Menu Category
+      tags:
+      - Menu
+  /project/{projectID}/dish:
+    post:
+      consumes:
+      - application/json
+      description: Add a new dish to a category in project menu
+      parameters:
+      - description: Project ID
+        format: uuid
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: Dish data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/menu_handler.addDishReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.Dish'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      summary: Add Dish
+      tags:
+      - Menu
+  /project/{projectID}/menu:
     get:
       consumes:
       - application/json
@@ -384,42 +471,6 @@ paths:
       summary: Get Menu Categories
       tags:
       - Menu
-  /project/{projectID}/category:
-    post:
-      consumes:
-      - application/json
-      description: Add a new category to project menu
-      parameters:
-      - description: Project ID
-        format: uuid
-        in: path
-        name: projectID
-        required: true
-        type: string
-      - description: Category data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/menu.addCategoryReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/menu.Category'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/helper.ResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helper.ResponseError'
-      summary: Add Menu Category
-      tags:
-      - Menu
   /project/{slug}:
     get:
       consumes:
@@ -447,6 +498,33 @@ paths:
           schema:
             $ref: '#/definitions/helper.ResponseError'
       summary: Get project by slug
+      tags:
+      - projects
+  /project/my:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects owned by authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.Project'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my projects
       tags:
       - projects
 produces:

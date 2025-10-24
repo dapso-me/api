@@ -27,6 +27,7 @@ func (h *handler) Register(g *echo.Group, m helper.Middleware) {
 	customer.GET("/:slug", h.findBySlug)
 
 	private := customer.Group("", m.Authenticate)
+	private.GET("/my", h.findMy)
 	private.POST("", h.add)
 	private.DELETE("/:ID", h.remove)
 }
@@ -83,6 +84,26 @@ func (h *handler) add(c echo.Context) error {
 	}
 
 	return c.JSON(200, output)
+}
+
+// findMy godoc
+// @Summary      Get my projects
+// @Description  Get all projects owned by authenticated user
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}   project.Project
+// @Failure      401  {object}  helper.ResponseError
+// @Failure      500  {object}  helper.ResponseError
+// @Security     BearerAuth
+// @Router       /project/my [get]
+func (h *handler) findMy(c echo.Context) error {
+	projects, err := h.project.FindByOwner(c.Request().Context())
+	if err != nil {
+		return helper.HandleError(c, err)
+	}
+
+	return c.JSON(200, projects)
 }
 
 // remove godoc

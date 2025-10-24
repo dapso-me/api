@@ -3,6 +3,7 @@ package project_usecase
 import (
 	"api/internal/application"
 	"api/internal/common"
+	"api/internal/domain/menu"
 	"api/internal/domain/project"
 	"api/internal/domain/session"
 	"context"
@@ -17,14 +18,16 @@ type Auth interface {
 }
 
 type uc struct {
-	auth        Auth
-	projectRepo project.Repository
+	auth         Auth
+	projectRepo  project.Repository
+	categoryRepo menu.CategoryRepository
 }
 
-func New(auth Auth, projectRepo project.Repository) application.Project {
+func New(auth Auth, projectRepo project.Repository, categoryRepo menu.CategoryRepository) application.Project {
 	return &uc{
-		auth:        auth,
-		projectRepo: projectRepo,
+		auth:         auth,
+		projectRepo:  projectRepo,
+		categoryRepo: categoryRepo,
 	}
 }
 
@@ -107,4 +110,32 @@ func (uc *uc) Remove(c context.Context, projectID uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (uc *uc) FindByOwner(c context.Context) ([]*application.FullProject, error) {
+	session, err := session.GetFromContext(c)
+	if err != nil {
+		return nil, fmt.Errorf("find by owner: %w", err)
+	}
+
+	output := []*application.FullProject{}
+
+	projects, err := uc.projectRepo.FindByCustomerID(c, session.CustomerID)
+	if err != nil {
+		return nil, fmt.Errorf("find by owner: %w", err)
+	}
+
+	for _, project := range projects {
+		categories, err := uc.categoryRepo.FindByProjectID(c, project.ID)
+		if err != nil {
+			return nil, fmt.Errorf("find by owner: %w", err)
+		}
+
+		output = append(output, &application.FullProject{
+			Project: project,
+			Menu:    categories,
+		})
+	}
+
+	return output, nil
 }

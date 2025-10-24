@@ -219,6 +219,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/project/my": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all projects owned by authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Get my projects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.Project"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/project/{ID}": {
             "delete": {
                 "security": [
@@ -281,7 +324,115 @@ const docTemplate = `{
                 }
             }
         },
-        "/project/{projectID}": {
+        "/project/{projectID}/category": {
+            "post": {
+                "description": "Add a new category to project menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Add Menu Category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Project ID",
+                        "name": "projectID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/menu_handler.addCategoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/{projectID}/dish": {
+            "post": {
+                "description": "Add a new dish to a category in project menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Add Dish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Project ID",
+                        "name": "projectID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dish data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/menu_handler.addDishReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.Dish"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/{projectID}/menu": {
             "get": {
                 "description": "Get all menu categories for a specific project",
                 "consumes": [
@@ -312,60 +463,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/menu.Category"
                             }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/helper.ResponseError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helper.ResponseError"
-                        }
-                    }
-                }
-            }
-        },
-        "/project/{projectID}/category": {
-            "post": {
-                "description": "Add a new category to project menu",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Menu"
-                ],
-                "summary": "Add Menu Category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "Project ID",
-                        "name": "projectID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Category data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/menu.addCategoryReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/menu.Category"
                         }
                     },
                     "400": {
@@ -550,9 +647,6 @@ const docTemplate = `{
                         "$ref": "#/definitions/menu.OptionGroup"
                     }
                 },
-                "photo_mini_url": {
-                    "type": "string"
-                },
                 "photo_url": {
                     "type": "string"
                 },
@@ -561,6 +655,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                },
+                "project_id": {
+                    "type": "string"
                 },
                 "translations": {
                     "description": "key is lang_code",
@@ -643,7 +740,7 @@ const docTemplate = `{
                 }
             }
         },
-        "menu.addCategoryReq": {
+        "menu_handler.addCategoryReq": {
             "type": "object",
             "properties": {
                 "position": {
@@ -657,6 +754,29 @@ const docTemplate = `{
                     },
                     "example": {
                         "{en": "Category Name}"
+                    }
+                }
+            }
+        },
+        "menu_handler.addDishReq": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "photo": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "translations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/menu.DishTranslation"
                     }
                 }
             }

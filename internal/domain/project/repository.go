@@ -9,6 +9,7 @@ import (
 type Repository interface {
 	FindOneBySlug(c context.Context, slug string) (*Project, error)
 	FindOneByID(c context.Context, projectID uuid.UUID) (*Project, error)
+	FindByCustomerID(c context.Context, customerID uuid.UUID) ([]*Project, error)
 
 	Save(c context.Context, project *Project) error
 }
