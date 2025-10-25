@@ -319,7 +319,7 @@
         },
         "/project/{projectID}/category": {
             "post": {
-                "description": "Add a new category to project menu",
+                "description": "Remove a category",
                 "consumes": [
                     "application/json"
                 ],
@@ -329,32 +329,20 @@
                 "tags": [
                     "Menu"
                 ],
-                "summary": "Add Menu Category",
+                "summary": "Remove Menu Category",
                 "parameters": [
                     {
                         "type": "string",
                         "format": "uuid",
-                        "description": "Project ID",
-                        "name": "projectID",
+                        "description": "Category ID",
+                        "name": "categoryID",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Category data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/menu_handler.addCategoryReq"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/menu.Category"
-                        }
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",

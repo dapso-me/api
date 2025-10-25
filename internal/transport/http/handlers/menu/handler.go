@@ -29,7 +29,10 @@ func (h *handler) Register(g *echo.Group, m helper.Middleware) {
 	project.GET("/menu", h.getMenu)
 
 	private := project.Group("", m.Authenticate)
+
 	private.POST("/category", h.addCategory)
+	private.DELETE("/category/:categoryID", h.removeCategory)
+
 	private.POST("/dish", h.addDish)
 }
 
@@ -94,6 +97,32 @@ func (h *handler) addCategory(c echo.Context) error {
 	}
 
 	return c.JSON(200, output)
+}
+
+// addCategory godoc
+// @Summary      Remove Menu Category
+// @Description  Remove a category
+// @Tags         Menu
+// @Accept       json
+// @Produce      json
+// @Param        categoryID path string true "Category ID" format(uuid)
+// @Success      200
+// @Failure      400 {object} helper.ResponseError
+// @Failure      500 {object} helper.ResponseError
+// @Router       /project/{projectID}/category [post]
+func (h *handler) removeCategory(c echo.Context) error {
+	categoryID, err := uuid.Parse(c.Param("categoryID"))
+	if err != nil {
+		return helper.HandleError(c, err)
+	}
+
+	err = h.category.Remove(c.Request().Context(), categoryID)
+	if err != nil {
+		h.logger.Error("failed to remove category", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	return c.NoContent(200)
 }
 
 // addDish godoc

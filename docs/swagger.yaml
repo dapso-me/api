@@ -371,27 +371,19 @@ paths:
     post:
       consumes:
       - application/json
-      description: Add a new category to project menu
+      description: Remove a category
       parameters:
-      - description: Project ID
+      - description: Category ID
         format: uuid
         in: path
-        name: projectID
+        name: categoryID
         required: true
         type: string
-      - description: Category data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/menu_handler.addCategoryReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/menu.Category'
         "400":
           description: Bad Request
           schema:
@@ -400,7 +392,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/helper.ResponseError'
-      summary: Add Menu Category
+      summary: Remove Menu Category
       tags:
       - Menu
   /project/{projectID}/dish:

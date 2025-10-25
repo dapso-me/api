@@ -99,7 +99,7 @@ func (uc *uc) Remove(c context.Context, categoryID uuid.UUID) error {
 		return fmt.Errorf("remove category: %w", err)
 	}
 
-	projectEntity, err := uc.projectRepo.FindOneByID(c, categoryEntity.ID)
+	projectEntity, err := uc.projectRepo.FindOneByID(c, categoryEntity.ProjectID)
 	if err != nil {
 		return fmt.Errorf("remove category: %w", err)
 	}
