@@ -67,7 +67,7 @@ func main() {
 	dishUC := dish_usecase.New(dishRepoPG, projectUC, storage)
 
 	// handlers
-	accountHandler := account_handler.New(logger, customerUC)
+	accountHandler := account_handler.New(logger, customerUC, projectUC)
 	projectHandler := project_handler.New(logger, projectUC)
 	menuHandler := menu_handler.New(logger, categoryUC, dishUC)
 

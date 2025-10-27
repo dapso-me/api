@@ -66,8 +66,12 @@ func (uc *uc) FindOneBySlug(c context.Context, slug string) (*project.Project, e
 }
 
 func (uc *uc) Add(c context.Context, input *application.AddProjectInput) (*project.Project, error) {
+	wrapErr := func(err error) error {
+		return fmt.Errorf("add project: %w", err)
+	}
+
 	if err := uc.auth.AdminGuard(c); err != nil {
-		return nil, fmt.Errorf("add project: %w", err)
+		return nil, wrapErr(err)
 	}
 
 	_, err := uc.projectRepo.FindOneBySlug(c, input.Slug)
@@ -75,19 +79,19 @@ func (uc *uc) Add(c context.Context, input *application.AddProjectInput) (*proje
 		if errors.Is(err, common.ErrNotFound) {
 			// it's okay
 		} else {
-			return nil, fmt.Errorf("add project: %w", err)
+			return nil, wrapErr(err)
 		}
 	} else {
-		return nil, fmt.Errorf("add project: %w", project.ErrSlugAlreadyInUse)
+		return nil, wrapErr(project.ErrSlugAlreadyInUse)
 	}
 
 	projectEntity, err := project.New(input.CustomerID, input.Slug, input.Name)
 	if err != nil {
-		return nil, fmt.Errorf("add project: %w", err)
+		return nil, wrapErr(err)
 	}
 
 	if err := uc.projectRepo.Save(c, projectEntity); err != nil {
-		return nil, fmt.Errorf("add project: %w", err)
+		return nil, wrapErr(err)
 	}
 
 	return projectEntity, nil

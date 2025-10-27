@@ -11,12 +11,14 @@ import (
 type handler struct {
 	logger   *zap.Logger
 	customer application.Customer
+	project  application.Project
 }
 
-func New(logger *zap.Logger, customer application.Customer) helper.Handler {
+func New(logger *zap.Logger, customer application.Customer, project application.Project) helper.Handler {
 	return &handler{
 		logger:   logger,
 		customer: customer,
+		project:  project,
 	}
 }
 
@@ -74,11 +76,22 @@ func (h *handler) signIn(c echo.Context) error {
 // @Failure      500 {object} helper.ResponseError
 // @Router       /account [get]
 func (h *handler) getMe(c echo.Context) error {
-	output, err := h.customer.Authenticate(c.Request().Context())
+	output := &AuthRes{}
+
+	authOutput, err := h.customer.Authenticate(c.Request().Context())
 	if err != nil {
 		h.logger.Error("failed to authenticate", zap.Error(err))
 		return helper.HandleError(c, err)
 	}
+
+	projects, err := h.project.FindByOwner(c.Request().Context())
+	if err != nil {
+		h.logger.Error("failed to authenticate", zap.Error(err))
+		return helper.HandleError(c, err)
+	}
+
+	output.AuthOutput = authOutput
+	output.Projects = projects
 
 	return c.JSON(200, output)
 }

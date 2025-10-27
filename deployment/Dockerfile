@@ -7,6 +7,7 @@ RUN go build -o app ./cmd/api/main.go
 
 FROM alpine:latest
 WORKDIR /app
+RUN mkdir -p /.cache && chmod -R 777 /.cache
 # COPY --chown=65534:65534 --from=builder /app/pkg/mail/templates /app/pkg/mail/templates
 COPY --chown=65534:65534 --from=builder /app/app ./app
 USER 65534
