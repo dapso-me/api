@@ -12,7 +12,7 @@ type addCategoryReq struct {
 }
 
 type addDishReq struct {
-	CategoryID   *uuid.UUID                      `json:"category_id"`
+	CategoryID   uuid.UUID                       `json:"category_id"`
 	Position     int                             `json:"position"`
 	Photo        string                          `json:"photo"`
 	Price        int                             `json:"price"`

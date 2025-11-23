@@ -20,6 +20,9 @@ import (
 // @BasePath     /api/v1
 // @Accept       json
 // @Produce      json
+// @Failure      400      {object}  helper.ResponseError
+// @Failure      401      {object}  helper.ResponseError
+// @Failure      500      {object}  helper.ResponseError
 
 type httpServer struct {
 	e           *echo.Echo

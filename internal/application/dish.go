@@ -24,7 +24,7 @@ type Dish interface {
 
 type AddDishInput struct {
 	ProjectID    uuid.UUID
-	CategoryID   *uuid.UUID
+	CategoryID   uuid.UUID
 	Position     int
 	Photo        []byte
 	Price        int
